@@ -1,3 +1,28 @@
 spring:
   application:
-    name: spring_1
+    name: back
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:h2:./db_dev;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    hikari:
+      auto-commit: false # 트랜잭션 관련해서 쓸데없는 쿼리를 줄여줌
+  jpa:
+    hibernate:
+      ddl-auto: update # DDL 자동 생성 모드
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100 # LAZY 초기화 시, 한번에 가져올 개수
+        format_sql: true # SQL 포맷팅
+        highlight_sql: true # SQL 하이라이팅
+        use_sql_comments: true # SQL 주석 사용
+logging:
+  level:
+    com.back: DEBUG
+    org.hibernate.SQL: DEBUG # SQL 쿼리 로그
+    org.hibernate.orm.jdbc.bind: TRACE # SQL 바인딩 로그
+    org.hibernate.orm.jdbc.extract: TRACE # SQL 추출 로그
+    org.springframework.transaction.interceptor: TRACE # 트랜잭션 로그
