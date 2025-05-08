@@ -25,4 +25,8 @@ class MemberService(
     fun findByUsername(username: String): Member? {
         return memberRepository.findByUsername(username)
     }
+
+    fun findAll(): List<Member> {
+        return memberRepository.findAll()
+    }
 }
