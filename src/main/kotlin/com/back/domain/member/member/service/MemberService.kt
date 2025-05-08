@@ -21,4 +21,8 @@ class MemberService(
 
         return memberRepository.save(member)
     }
+
+    fun findByUsername(username: String): Member? {
+        return memberRepository.findByUsername(username)
+    }
 }
