@@ -5,6 +5,8 @@ import com.back.domain.member.member.service.MemberService
 import com.back.global.exception.ServiceException
 import com.back.global.rsData.RsData
 import com.back.standard.extensions.getOrThrow
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -24,13 +26,15 @@ class ApiV1MemberController(
 
 
     class MemberLoginReqBody(
+        @field:NotBlank
         val username: String,
+        @field:NotBlank
         val password: String
     )
 
     @PostMapping("/login")
     fun login(
-        @RequestBody reqBody: MemberLoginReqBody
+        @RequestBody @Valid reqBody: MemberLoginReqBody
     ): RsData<MemberDto> {
         val member = memberService.findByUsername(reqBody.username)
             ?: throw ServiceException("401-1", "존재하지 않는 회원입니다.")
