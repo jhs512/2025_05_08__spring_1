@@ -1,6 +1,8 @@
 package com.back.domain.member.member.entity
 
-import jakarta.persistence.*
+import com.back.global.jpa.entity.BaseTime
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
 
 @Entity
 class Member(
@@ -10,11 +12,7 @@ class Member(
     var password: String,
     @Column(nullable = false)
     var name: String,
-) {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
-
+) : BaseTime() {
     override fun toString(): String {
         return "Member(id=$id, username='$username', password='$password', name='$name')"
     }
