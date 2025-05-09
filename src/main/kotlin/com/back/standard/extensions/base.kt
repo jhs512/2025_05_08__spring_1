@@ -1,0 +1,10 @@
+package com.back.standard.extensions
+
+
+fun <T : Any> T?.getOrThrow(): T {
+    return this ?: throw NoSuchElementException()
+}
+
+fun <T : Any> T?.getOrDefault(default: T): T {
+    return this ?: default
+}

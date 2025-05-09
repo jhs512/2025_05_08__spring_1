@@ -29,4 +29,9 @@ class MemberService(
     fun findAll(): List<Member> {
         return memberRepository.findAll()
     }
+
+    fun findById(id: Long): Member? {
+        return memberRepository.findById(id)
+            .orElse(null)
+    }
 }
