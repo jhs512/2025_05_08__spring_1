@@ -2,6 +2,10 @@ package com.back.domain.member.member.service
 
 import com.back.domain.member.member.entity.Member
 import com.back.domain.member.member.repository.MemberRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 @Service
@@ -33,5 +37,14 @@ class MemberService(
     fun findById(id: Long): Member? {
         return memberRepository.findById(id)
             .orElse(null)
+    }
+
+    fun findAllByUsernameContaining(
+        searchKeyword: String,
+        page: Int,
+        pageSize: Int
+    ): Page<Member> {
+        val pageable: Pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")))
+        return memberRepository.findAllByUsernameContaining(searchKeyword, pageable)
     }
 }
