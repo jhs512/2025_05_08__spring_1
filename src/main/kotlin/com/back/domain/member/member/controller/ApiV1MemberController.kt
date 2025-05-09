@@ -37,10 +37,10 @@ class ApiV1MemberController(
         @RequestBody @Valid reqBody: MemberLoginReqBody
     ): RsData<MemberDto> {
         val member = memberService.findByUsername(reqBody.username)
-            ?: throw ServiceException("401-1", "존재하지 않는 회원입니다.")
+            ?: throw ServiceException("400-1", "존재하지 않는 회원입니다.")
 
         if (member.password != reqBody.password) {
-            throw ServiceException("401-2", "비밀번호가 일치하지 않습니다.")
+            throw ServiceException("400-2", "비밀번호가 일치하지 않습니다.")
         }
 
         return RsData(
