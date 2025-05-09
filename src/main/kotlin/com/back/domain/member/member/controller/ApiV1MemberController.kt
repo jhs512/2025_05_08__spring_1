@@ -2,10 +2,10 @@ package com.back.domain.member.member.controller
 
 import com.back.domain.member.member.dto.MemberDto
 import com.back.domain.member.member.service.MemberService
+import com.back.global.exception.ServiceException
+import com.back.global.rsData.RsData
 import com.back.standard.extensions.getOrThrow
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -20,5 +20,29 @@ class ApiV1MemberController(
             .let {
                 MemberDto(it)
             }
+    }
+
+
+    class MemberLoginReqBody(
+        val username: String,
+        val password: String
+    )
+
+    @PostMapping("/login")
+    fun login(
+        @RequestBody reqBody: MemberLoginReqBody
+    ): RsData<MemberDto> {
+        val member = memberService.findByUsername(reqBody.username)
+            ?: throw ServiceException("401-1", "존재하지 않는 회원입니다.")
+
+        if (member.password != reqBody.password) {
+            throw ServiceException("401-2", "비밀번호가 일치하지 않습니다.")
+        }
+
+        return RsData(
+            resultCode = "200-1",
+            msg = "로그인 성공",
+            data = MemberDto(member)
+        )
     }
 }
