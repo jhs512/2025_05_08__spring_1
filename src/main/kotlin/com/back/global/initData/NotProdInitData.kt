@@ -67,7 +67,7 @@ class NotProdInitData(
     @Transactional
     fun work2() {
         memberService.findByUsername("user3")?.let {
-            it.name = "유저3-변경"
+            it.nickname = "유저3-변경"
         }
     }
 }

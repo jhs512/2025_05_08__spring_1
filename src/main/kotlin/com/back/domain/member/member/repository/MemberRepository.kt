@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface MemberRepository : JpaRepository<Member, Long> {
     fun findByUsername(username: String): Member?
     fun findAllByUsernameContaining(searchKeyword: String, pageable: Pageable): Page<Member>
-    fun findAllByNameContaining(searchKeyword: String, pageable: Pageable): Page<Member>
-    fun findAllByUsernameContainingOrNameContaining(
+    fun findAllByNicknameContaining(searchKeyword: String, pageable: Pageable): Page<Member>
+    fun findAllByUsernameContainingOrNicknameContaining(
         searchKeyword1: String,
         searchKeyword2: String,
         pageable: Pageable

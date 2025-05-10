@@ -8,13 +8,13 @@ class MemberWithUsernameDto(
     val createDate: LocalDateTime,
     val modifyDate: LocalDateTime,
     val username: String,
-    val name: String,
+    val nickname: String,
 ) {
     constructor(member: Member) : this(
         id = member.id,
         createDate = member.createDate,
         modifyDate = member.modifyDate,
         username = member.username,
-        name = member.name,
+        nickname = member.nickname,
     )
 }

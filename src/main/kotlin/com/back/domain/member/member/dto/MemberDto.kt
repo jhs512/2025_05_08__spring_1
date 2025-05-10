@@ -7,12 +7,12 @@ class MemberDto(
     val id: Long,
     val createDate: LocalDateTime,
     val modifyDate: LocalDateTime,
-    val name: String,
+    val nickname: String,
 ) {
     constructor(member: Member) : this(
         id = member.id,
         createDate = member.createDate,
         modifyDate = member.modifyDate,
-        name = member.name,
+        nickname = member.nickname,
     )
 }
