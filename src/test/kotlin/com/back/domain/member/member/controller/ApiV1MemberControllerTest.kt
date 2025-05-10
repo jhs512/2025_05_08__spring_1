@@ -69,4 +69,32 @@ class ApiV1MemberControllerTest {
             )
             .andExpect(MockMvcResultMatchers.jsonPath("$.data.nickname").value(member.nickname))
     }
+
+    @Test
+    @DisplayName("로그인, without username")
+    fun t2() {
+        val resultActions = mvc
+            .perform(
+                post("/api/v1/members/login")
+                    .content(
+                        """
+                        {
+                            "username": "",
+                            "password": "1234"
+                        }
+                        """.trimIndent()
+                    )
+                    .contentType(
+                        MediaType(APPLICATION_JSON, UTF_8)
+                    )
+            )
+            .andDo(MockMvcResultHandlers.print())
+
+        resultActions
+            .andExpect(MockMvcResultMatchers.handler().handlerType(ApiV1MemberController::class.java))
+            .andExpect(MockMvcResultMatchers.handler().methodName("login"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.resultCode").value("400-1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.msg").value("username-NotBlank-must not be blank"))
+    }
 }
