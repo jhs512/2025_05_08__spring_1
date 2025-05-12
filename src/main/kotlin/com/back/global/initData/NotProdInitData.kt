@@ -36,32 +36,27 @@ class NotProdInitData(
         val memberSystem = memberService.join(
             "system", "1234", "시스템"
         )
+        memberSystem.apiKey = "system"
 
         val memberAdmin = memberService.join(
             "admin", "1234", "관리자"
         )
+        memberAdmin.apiKey = "admin"
 
         val memberUser1 = memberService.join(
             "user1", "1234", "유저1"
         )
+        memberUser1.apiKey = "user1"
 
         val memberUser2 = memberService.join(
             "user2", "1234", "유저2"
         )
+        memberUser2.apiKey = "user2"
 
         val memberUser3 = memberService.join(
             "user3", "1234", "유저3"
         )
-
-        listOf(
-            memberSystem,
-            memberAdmin,
-            memberUser1,
-            memberUser2,
-            memberUser3
-        ).forEach {
-            println(it)
-        }
+        memberUser3.apiKey = "user3"
     }
 
     @Transactional

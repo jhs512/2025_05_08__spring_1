@@ -12,6 +12,7 @@ class Member(
     var password: String,
     @Column(nullable = false)
     var nickname: String,
+    var apiKey: String
 ) : BaseTime() {
     override fun toString(): String {
         return "Member(id=$id, username='$username', password='$password', name='$nickname')"
