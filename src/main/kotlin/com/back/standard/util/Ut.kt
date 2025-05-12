@@ -1,5 +1,8 @@
 package com.back.standard.util
 
+import com.back.global.app.AppConfig
+import com.fasterxml.jackson.databind.ObjectMapper
+
 object Ut {
     object str {
         @JvmStatic
@@ -15,6 +18,15 @@ object Ut {
         @JvmStatic
         fun isNotBlank(str: String?): Boolean {
             return !isBlank(str)
+        }
+    }
+
+    object json {
+        private val om: ObjectMapper = AppConfig.getObjectMapper()
+
+        @JvmStatic
+        fun toString(obj: Any): String {
+            return om.writeValueAsString(obj)
         }
     }
 }
