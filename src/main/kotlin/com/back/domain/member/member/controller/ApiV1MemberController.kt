@@ -15,6 +15,11 @@ class ApiV1MemberController(
     private val memberService: MemberService,
     private val rq: Rq
 ) {
+    @GetMapping("/me-temp")
+    fun meTemp(): String {
+        return "temp-string"
+    }
+
     @GetMapping("/me")
     fun me(): RsData<MemberDto> {
         val member = rq.member
