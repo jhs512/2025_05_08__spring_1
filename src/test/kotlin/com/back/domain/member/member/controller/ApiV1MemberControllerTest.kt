@@ -58,17 +58,18 @@ class ApiV1MemberControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.resultCode").value("200-1"))
             .andExpect(jsonPath("$.msg").value("${member.nickname}님 환영합니다."))
-            .andExpect(jsonPath("$.data").exists())
-            .andExpect(jsonPath("$.data.id").value(member.id))
+            .andExpect(jsonPath("$.data.apiKey").value(member.apiKey))
+            .andExpect(jsonPath("$.data.item").exists())
+            .andExpect(jsonPath("$.data.item.id").value(member.id))
             .andExpect(
-                jsonPath("$.data.createDate")
+                jsonPath("$.data.item.createDate")
                     .value(startsWith(member.createDate.toString().substring(0, 20)))
             )
             .andExpect(
-                jsonPath("$.data.modifyDate")
+                jsonPath("$.data.item.modifyDate")
                     .value(startsWith(member.modifyDate.toString().substring(0, 20)))
             )
-            .andExpect(jsonPath("$.data.nickname").value(member.nickname))
+            .andExpect(jsonPath("$.data.item.nickname").value(member.nickname))
     }
 
     @Test
@@ -243,7 +244,7 @@ class ApiV1MemberControllerTest {
 
         resultActions
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.resultCode").value("400-2"))            .andExpect(
+            .andExpect(jsonPath("$.resultCode").value("400-2")).andExpect(
                 jsonPath(
                     "$.msg",
                     containsString("비밀번호가 일치하지 않습니다.")

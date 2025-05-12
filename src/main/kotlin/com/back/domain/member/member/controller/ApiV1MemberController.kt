@@ -35,7 +35,7 @@ class ApiV1MemberController(
     @PostMapping("/login")
     fun login(
         @RequestBody @Valid reqBody: MemberLoginReqBody
-    ): RsData<MemberDto> {
+    ): RsData<Map<String, Any>> {
         val member = memberService.findByUsername(reqBody.username)
             ?: throw ServiceException("400-1", "존재하지 않는 회원입니다.")
 
@@ -46,7 +46,10 @@ class ApiV1MemberController(
         return RsData(
             resultCode = "200-1",
             msg = "${member.nickname}님 환영합니다.",
-            data = MemberDto(member)
+            data = mapOf(
+                "item" to MemberDto(member),
+                "apiKey" to member.apiKey
+            )
         )
     }
 }
