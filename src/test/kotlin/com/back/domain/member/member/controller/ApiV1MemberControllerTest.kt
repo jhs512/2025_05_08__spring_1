@@ -9,10 +9,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
@@ -95,7 +97,7 @@ class ApiV1MemberControllerTest {
         resultActions
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.resultCode").value("404-1"))
-            .andExpect(jsonPath("$.msg", containsString("해당 엔드포인트는 존재하지 않습니다.")))
+            .andExpect(jsonPath("$.msg").value(containsString("해당 엔드포인트는 존재하지 않습니다.")))
     }
 
     @Test
@@ -190,8 +192,8 @@ class ApiV1MemberControllerTest {
             .andExpect(handler().methodName("login"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.resultCode").value("400-1"))
-            .andExpect(jsonPath("$.msg", containsString("잘못된 요청입니다.")))
-            .andExpect(jsonPath("$.msg", containsString("parameter username which is a non-nullable type")))
+            .andExpect(jsonPath("$.msg").value(containsString("잘못된 요청입니다.")))
+            .andExpect(jsonPath("$.msg").value(containsString("parameter username which is a non-nullable type")))
     }
 
     @Test
@@ -276,8 +278,8 @@ class ApiV1MemberControllerTest {
             .andExpect(handler().methodName("login"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.resultCode").value("400-1"))
-            .andExpect(jsonPath("$.msg", containsString("잘못된 요청입니다.")))
-            .andExpect(jsonPath("$.msg", containsString("parameter password which is a non-nullable type")))
+            .andExpect(jsonPath("$.msg").value(containsString("잘못된 요청입니다.")))
+            .andExpect(jsonPath("$.msg").value(containsString("parameter password which is a non-nullable type")))
     }
 
     @Test
@@ -306,5 +308,83 @@ class ApiV1MemberControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.resultCode").value("400-1"))
             .andExpect(jsonPath("$.msg").value("password-NotBlank-must not be blank"))
+    }
+
+    @Test
+    @DisplayName("내 정보")
+    fun t10() {
+        val resultActions = mvc
+            .perform(
+                get("/api/v1/members/me")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer user1")
+            )
+            .andDo(MockMvcResultHandlers.print())
+
+        val member = memberService.findByUsername("user1").getOrThrow()
+
+        resultActions
+            .andExpect(handler().handlerType(ApiV1MemberController::class.java))
+            .andExpect(handler().methodName("me"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.resultCode").value("200-1"))
+            .andExpect(jsonPath("$.msg").value("OK"))
+            .andExpect(jsonPath("$.data").exists())
+            .andExpect(jsonPath("$.data.id").value(member.id))
+            .andExpect(
+                jsonPath("$.data.createDate")
+                    .value(startsWith(member.createDate.toString().substring(0, 20)))
+            )
+            .andExpect(
+                jsonPath("$.data.modifyDate")
+                    .value(startsWith(member.modifyDate.toString().substring(0, 20)))
+            )
+            .andExpect(jsonPath("$.data.nickname").value(member.nickname))
+    }
+
+    @Test
+    @DisplayName("내 정보, with no authorization header")
+    fun t11() {
+        val resultActions = mvc
+            .perform(
+                get("/api/v1/members/me")
+            )
+            .andDo(MockMvcResultHandlers.print())
+
+        resultActions
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.resultCode").value("401-1"))
+            .andExpect(jsonPath("$.msg").value("apiKey가 필요합니다."))
+    }
+
+    @Test
+    @DisplayName("내 정보, doesn't start with Bearer")
+    fun t12() {
+        val resultActions = mvc
+            .perform(
+                get("/api/v1/members/me")
+                    .header(HttpHeaders.AUTHORIZATION, "user1")
+            )
+            .andDo(MockMvcResultHandlers.print())
+
+        resultActions
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.resultCode").value("401-2"))
+            .andExpect(jsonPath("$.msg").value("인증정보는 'Bearer [token]' 형태여야 합니다."))
+    }
+
+    @Test
+    @DisplayName("내 정보, with wrong apiKey")
+    fun t13() {
+        val resultActions = mvc
+            .perform(
+                get("/api/v1/members/me")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer wrong-api-key")
+            )
+            .andDo(MockMvcResultHandlers.print())
+
+        resultActions
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.resultCode").value("401-3"))
+            .andExpect(jsonPath("$.msg").value("apiKey가 올바르지 않습니다."))
     }
 }

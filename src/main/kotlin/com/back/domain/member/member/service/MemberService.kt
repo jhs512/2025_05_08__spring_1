@@ -72,4 +72,8 @@ class MemberService(
             }
         }
     }
+
+    fun findByApiKey(apiKey: String): Member? {
+        return memberRepository.findByApiKey(apiKey)
+    }
 }

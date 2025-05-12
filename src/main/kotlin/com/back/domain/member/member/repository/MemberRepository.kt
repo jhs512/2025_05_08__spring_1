@@ -14,4 +14,6 @@ interface MemberRepository : JpaRepository<Member, Long> {
         searchKeyword2: String,
         pageable: Pageable
     ): Page<Member>
+
+    fun findByApiKey(apiKey: String): com.back.domain.member.member.entity.Member?
 }
