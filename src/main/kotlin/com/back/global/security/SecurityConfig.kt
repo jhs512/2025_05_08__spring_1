@@ -12,10 +12,11 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandler
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 class SecurityConfig(
-
+    private val customAuthenticationFilter: CustomAuthenticationFilter,
 ) {
     @Bean
     fun baseSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -51,6 +52,8 @@ class SecurityConfig(
             sessionManagement {
                 sessionCreationPolicy = SessionCreationPolicy.STATELESS
             }
+
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(customAuthenticationFilter)
 
             exceptionHandling {
                 authenticationEntryPoint = AuthenticationEntryPoint { request, response, authException ->

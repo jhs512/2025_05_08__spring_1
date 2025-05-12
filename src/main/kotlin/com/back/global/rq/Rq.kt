@@ -3,8 +3,11 @@ package com.back.global.rq
 import com.back.domain.member.member.entity.Member
 import com.back.domain.member.member.service.MemberService
 import com.back.global.exception.ServiceException
+import com.back.global.security.SecurityUser
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.http.HttpHeaders
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.context.annotation.RequestScope
 
@@ -16,17 +19,34 @@ class Rq(
     private val memberService: MemberService,
     val req: HttpServletRequest
 ) {
+    fun getHeader(name: String, defaultValue: String): String {
+        return req.getHeader(name) ?: defaultValue
+    }
+
     val member: Member by lazy {
-        // 최초 접근 시 한 번만 실행됨
-        val authorization = req.getHeader(HttpHeaders.AUTHORIZATION) ?: ""
-        if (authorization.isBlank())
-            throw ServiceException("401-1", "apiKey가 필요합니다.")
-        if (!authorization.startsWith("Bearer "))
-            throw ServiceException("401-2", "인증정보는 'Bearer [token]' 형태여야 합니다.")
-        val apiKey = authorization.substring("Bearer ".length)
-        if (apiKey.isBlank())
-            throw ServiceException("401-1", "apiKey가 필요합니다.")
-        memberService.findByApiKey(apiKey)
-            ?: throw ServiceException("401-3", "apiKey가 올바르지 않습니다.")
+        SecurityContextHolder
+            .getContext().authentication
+            ?.principal
+            ?.let { it as SecurityUser }
+            ?.let { memberService.findById(it.id) }
+            ?: throw ServiceException("401-1", "인증정보가 필요합니다.")
+    }
+
+    fun setLogin(member: Member) {
+        val user = SecurityUser(
+            id = member.id,
+            member.username,
+            password = "",
+            member.nickname,
+            authorities = listOf()
+        )
+
+        val authentication: Authentication = UsernamePasswordAuthenticationToken(
+            user,
+            user.password,
+            user.authorities
+        )
+
+        SecurityContextHolder.getContext().authentication = authentication
     }
 }
