@@ -1,6 +1,7 @@
 package com.back.domain.member.member.controller
 
 import com.back.domain.member.member.dto.MemberDto
+import com.back.domain.member.member.service.AuthTokenService
 import com.back.domain.member.member.service.MemberService
 import com.back.global.exception.ServiceException
 import com.back.global.rq.Rq
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/members")
 class ApiV1MemberController(
     private val memberService: MemberService,
+    private val authTokenService: AuthTokenService,
     private val rq: Rq
 ) {
     @GetMapping("/me-temp")
@@ -41,7 +43,8 @@ class ApiV1MemberController(
 
     class MemberLoginResBody(
         val item: MemberDto,
-        val apiKey: String
+        val apiKey: String,
+        val accessToken: String
     )
 
     @PostMapping("/login")
@@ -55,12 +58,15 @@ class ApiV1MemberController(
             throw ServiceException("400-2", "비밀번호가 일치하지 않습니다.")
         }
 
+        val accessToken = authTokenService.genAccessToken(member)
+
         return RsData(
             resultCode = "200-1",
             msg = "${member.nickname}님 환영합니다.",
             data = MemberLoginResBody(
                 item = MemberDto(member),
-                apiKey = member.apiKey
+                apiKey = member.apiKey,
+                accessToken = accessToken
             )
         )
     }

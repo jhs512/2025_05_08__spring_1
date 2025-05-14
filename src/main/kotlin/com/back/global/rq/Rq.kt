@@ -25,7 +25,8 @@ class Rq(
 
     val member: Member by lazy {
         SecurityContextHolder
-            .getContext().authentication
+            .getContext()
+            .authentication
             ?.principal
             ?.let { it as SecurityUser }
             ?.let { Member(id = it.id, username = it.username, password = "", nickname = it.nickname, apiKey = "") }

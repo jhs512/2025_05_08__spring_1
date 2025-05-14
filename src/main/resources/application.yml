@@ -29,3 +29,8 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE # SQL 바인딩 로그
     org.hibernate.orm.jdbc.extract: TRACE # SQL 추출 로그
     org.springframework.transaction.interceptor: TRACE # 트랜잭션 로그
+custom:
+  jwt:
+    secretKey: ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890
+  accessToken:
+    expirationSeconds: "#{60 * 20}"
