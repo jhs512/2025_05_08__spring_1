@@ -11,7 +11,7 @@ import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.servlet.resource.NoResourceFoundException
+import org.springframework.web.servlet.NoHandlerFoundException
 
 @ControllerAdvice
 class GlobalExceptionHandler {
@@ -29,8 +29,8 @@ class GlobalExceptionHandler {
             )
     }
 
-    @ExceptionHandler(NoResourceFoundException::class)
-    fun handle(ex: NoResourceFoundException): ResponseEntity<RsData<Empty>> {
+    @ExceptionHandler(NoHandlerFoundException::class)
+    fun handle(ex: NoHandlerFoundException): ResponseEntity<RsData<Empty>> {
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(

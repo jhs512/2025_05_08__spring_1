@@ -75,7 +75,7 @@ class ApiV1MemberControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 with wrong endpoint")
+    @DisplayName("로그인, with wrong endpoint")
     fun t2() {
         val resultActions = mvc
             .perform(
@@ -95,9 +95,9 @@ class ApiV1MemberControllerTest {
             .andDo(MockMvcResultHandlers.print())
 
         resultActions
-            .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.resultCode").value("404-1"))
-            .andExpect(jsonPath("$.msg").value(containsString("해당 엔드포인트는 존재하지 않습니다.")))
+            .andExpect(status().isUnauthorized()) // 로그인을 안한 상태라면 잘못된 엔트포인트에 접근했을 때 404 대신 401이 먼저 발생하게 된다.
+            .andExpect(jsonPath("$.resultCode").value("401-1"))
+            .andExpect(jsonPath("$.msg").value(containsString("사용자 인증정보가 올바르지 않습니다.")))
     }
 
     @Test
@@ -386,5 +386,21 @@ class ApiV1MemberControllerTest {
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.resultCode").value("401-3"))
             .andExpect(jsonPath("$.msg").value("apiKey가 올바르지 않습니다."))
+    }
+
+    @Test
+    @DisplayName("내 정보, with wrong endpoint")
+    fun t14() {
+        val resultActions = mvc
+            .perform(
+                get("/api/v1/members/me-wrong")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer user1")
+            )
+            .andDo(MockMvcResultHandlers.print())
+
+        resultActions
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.resultCode").value("404-1"))
+            .andExpect(jsonPath("$.msg").value(containsString("해당 엔드포인트는 존재하지 않습니다.")))
     }
 }
