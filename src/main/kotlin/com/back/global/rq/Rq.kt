@@ -33,6 +33,11 @@ class Rq(
             ?: throw ServiceException("401-1", "인증정보가 필요합니다.")
     }
 
+    val fulfilledMember: Member by lazy {
+        memberService.findById(member.id)
+            ?: throw ServiceException("401-2", "존재하지 않는 회원입니다.")
+    }
+
     fun setLogin(member: Member) {
         val user = SecurityUser(
             id = member.id,

@@ -353,7 +353,7 @@ class ApiV1MemberControllerTest {
         resultActions
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.resultCode").value("401-1"))
-            .andExpect(jsonPath("$.msg").value("apiKey가 필요합니다."))
+            .andExpect(jsonPath("$.msg").value("사용자 인증정보가 올바르지 않습니다."))
     }
 
     @Test
@@ -368,8 +368,8 @@ class ApiV1MemberControllerTest {
 
         resultActions
             .andExpect(status().isUnauthorized())
-            .andExpect(jsonPath("$.resultCode").value("401-2"))
-            .andExpect(jsonPath("$.msg").value("인증정보는 'Bearer [token]' 형태여야 합니다."))
+            .andExpect(jsonPath("$.resultCode").value("401-1"))
+            .andExpect(jsonPath("$.msg").value("사용자 인증정보가 올바르지 않습니다."))
     }
 
     @Test
@@ -384,8 +384,8 @@ class ApiV1MemberControllerTest {
 
         resultActions
             .andExpect(status().isUnauthorized())
-            .andExpect(jsonPath("$.resultCode").value("401-3"))
-            .andExpect(jsonPath("$.msg").value("apiKey가 올바르지 않습니다."))
+            .andExpect(jsonPath("$.resultCode").value("401-1"))
+            .andExpect(jsonPath("$.msg").value("사용자 인증정보가 올바르지 않습니다."))
     }
 
     @Test

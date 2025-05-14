@@ -22,7 +22,7 @@ class ApiV1MemberController(
 
     @GetMapping("/me")
     fun me(): RsData<MemberDto> {
-        val member = rq.member
+        val member = rq.fulfilledMember
 
         return RsData(
             resultCode = "200-1",
