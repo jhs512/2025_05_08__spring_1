@@ -1,7 +1,9 @@
 package com.back.global.security
 
+import com.back.domain.member.member.entity.Member
 import com.back.domain.member.member.service.MemberService
 import com.back.global.rq.Rq
+import com.back.standard.extensions.getOrThrow
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -16,6 +18,30 @@ class CustomAuthenticationFilter(
     private val memberService: MemberService,
     private val rq: Rq
 ) : OncePerRequestFilter() {
+    private data class AuthTokens(val apiKey: String, val accessToken: String)
+
+    private fun getAuthTokensFromRequest(): AuthTokens? {
+        val authorization = rq.getHeader(HttpHeaders.AUTHORIZATION, "")
+
+        if (!authorization.isNullOrEmpty() && authorization.startsWith("Bearer ")) {
+            val token = authorization.removePrefix("Bearer ")
+            val tokenBits = token.split(" ", limit = 2)
+
+            if (tokenBits.size == 2) {
+                return AuthTokens(tokenBits[0], tokenBits[1])
+            }
+        }
+
+        val apiKey = rq.getCookieValue("apiKey")
+        val accessToken = rq.getCookieValue("accessToken")
+
+        return if (!apiKey.isNullOrEmpty() && !accessToken.isNullOrEmpty()) {
+            AuthTokens(apiKey, accessToken)
+        } else {
+            null
+        }
+    }
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -33,38 +59,33 @@ class CustomAuthenticationFilter(
             return
         }
 
-        val authorization = rq.getHeader(HttpHeaders.AUTHORIZATION, "")
+        val authTokens = getAuthTokensFromRequest()
 
-        // 인증정보가 없는 경우 패스
-        if (authorization.isBlank() ) {
+        if (authTokens == null) {
             filterChain.doFilter(request, response)
             return
         }
 
-        // 인증정보가 Bearer 로 시작하지 않는 경우 패스
-        if (!authorization.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response)
-            return
+        val (apiKey, accessToken) = authTokens
+
+        var member = memberService.getMemberFromAccessToken(accessToken)
+
+        if (member == null) {
+            member = refreshAccessTokenByApiKey(apiKey)
         }
 
-        val apiKey = authorization.substring("Bearer ".length)
-
-        // apiKey 가 비어있는 경우 패스
-        if (apiKey.isBlank()) {
-            filterChain.doFilter(request, response)
-            return
-        }
-
-        val member = memberService.findByApiKey(apiKey)
-            ?: run {
-                // apiKey 가 올바르지 않은 경우 패스
-                filterChain.doFilter(request, response)
-                return
-            }
-
-        // 시큐리티에게 현재 요청은 인증된 사용자의 요청이라는 것을 알림
         rq.setLogin(member)
 
         filterChain.doFilter(request, response)
+    }
+
+    private fun refreshAccessTokenByApiKey(apiKey: String): Member {
+        val member = memberService.findByApiKey(apiKey).getOrThrow()
+        refreshAccessToken(member)
+        return member
+    }
+
+    private fun refreshAccessToken(member: Member) {
+        rq.refreshAccessToken(member)
     }
 }

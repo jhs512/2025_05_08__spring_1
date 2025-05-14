@@ -2,6 +2,7 @@ package com.back.global.app
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
@@ -16,6 +17,7 @@ class AppConfig {
     companion object {
         private lateinit var environment: Environment
         private lateinit var objectMapper: ObjectMapper
+        private lateinit var siteCookieDomain: String
 
         @JvmStatic
         fun isProd(): Boolean = environment.matchesProfiles("prod")
@@ -31,6 +33,9 @@ class AppConfig {
 
         @JvmStatic
         fun getObjectMapper(): ObjectMapper = objectMapper
+
+        @JvmStatic
+        fun getSiteCookieDomain(): String = siteCookieDomain
     }
 
     @Autowired
@@ -41,5 +46,10 @@ class AppConfig {
     @Autowired
     fun setObjectMapper(objectMapper: ObjectMapper) {
         Companion.objectMapper = objectMapper
+    }
+
+    @Value("\${custom.site.cookieDomain}")
+    fun setSiteCookieDomain(siteCookieDomain: String) {
+        Companion.siteCookieDomain = siteCookieDomain
     }
 }
