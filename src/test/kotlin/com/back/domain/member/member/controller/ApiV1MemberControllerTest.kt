@@ -316,7 +316,7 @@ class ApiV1MemberControllerTest {
         val resultActions = mvc
             .perform(
                 get("/api/v1/members/me")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer user1")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer user1 EMPTY")
             )
             .andDo(MockMvcResultHandlers.print())
 
@@ -394,7 +394,7 @@ class ApiV1MemberControllerTest {
         val resultActions = mvc
             .perform(
                 get("/api/v1/members/me-wrong")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer user1")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer user1 EMPTY")
             )
             .andDo(MockMvcResultHandlers.print())
 
