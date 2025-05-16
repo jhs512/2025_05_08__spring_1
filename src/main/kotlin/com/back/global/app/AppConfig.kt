@@ -19,22 +19,16 @@ class AppConfig {
         private lateinit var objectMapper: ObjectMapper
         private lateinit var siteCookieDomain: String
 
-        @JvmStatic
         fun isProd(): Boolean = environment.matchesProfiles("prod")
 
-        @JvmStatic
         fun isDev(): Boolean = environment.matchesProfiles("dev")
 
-        @JvmStatic
         fun isTest(): Boolean = environment.matchesProfiles("test")
 
-        @JvmStatic
         fun isNotProd(): Boolean = !isProd()
 
-        @JvmStatic
         fun getObjectMapper(): ObjectMapper = objectMapper
 
-        @JvmStatic
         fun getSiteCookieDomain(): String = siteCookieDomain
     }
 

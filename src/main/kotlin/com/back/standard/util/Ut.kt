@@ -9,17 +9,14 @@ import javax.crypto.SecretKey
 
 object Ut {
     object str {
-        @JvmStatic
         fun isBlank(str: String?): Boolean {
             return str == null || str.trim().isEmpty()
         }
 
-        @JvmStatic
         fun lcfirst(str: String): String {
             return str[0].lowercaseChar() + str.substring(1)
         }
 
-        @JvmStatic
         fun isNotBlank(str: String?): Boolean {
             return !isBlank(str)
         }
@@ -28,7 +25,6 @@ object Ut {
     object json {
         private val om: ObjectMapper = AppConfig.getObjectMapper()
 
-        @JvmStatic
         fun toString(obj: Any): String {
             return om.writeValueAsString(obj)
         }
@@ -36,7 +32,7 @@ object Ut {
 
 
     object jwt {
-        @JvmStatic
+
         fun toString(secret: String, expireSeconds: Long, body: Map<String, Any>): String {
             val issuedAt = Date()
             val expiration = Date(issuedAt.time + 1000L * expireSeconds)
@@ -51,7 +47,6 @@ object Ut {
                 .compact()
         }
 
-        @JvmStatic
         fun isValid(secret: String, jwtStr: String): Boolean {
             val secretKey: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray())
 
@@ -67,7 +62,6 @@ object Ut {
             }
         }
 
-        @JvmStatic
         fun payload(secret: String, jwtStr: String): Map<String, Any>? {
             val secretKey: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray())
 
