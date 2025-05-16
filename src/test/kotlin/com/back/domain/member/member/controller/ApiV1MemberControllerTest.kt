@@ -313,14 +313,17 @@ class ApiV1MemberControllerTest {
     @Test
     @DisplayName("내 정보")
     fun t10() {
+        val actor = memberService.findByUsername("user1").getOrThrow()
+        val actorAuthIntegrationToken = memberService.genAuthIntegrationToken(actor)
+
         val resultActions = mvc
             .perform(
                 get("/api/v1/members/me")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer user1 EMPTY")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer $actorAuthIntegrationToken")
             )
             .andDo(MockMvcResultHandlers.print())
 
-        val member = memberService.findByUsername("user1").getOrThrow()
+        val member = actor
 
         resultActions
             .andExpect(handler().handlerType(ApiV1MemberController::class.java))
@@ -362,7 +365,7 @@ class ApiV1MemberControllerTest {
         val resultActions = mvc
             .perform(
                 get("/api/v1/members/me")
-                    .header(HttpHeaders.AUTHORIZATION, "user1")
+                    .header(HttpHeaders.AUTHORIZATION, "user1 access-token")
             )
             .andDo(MockMvcResultHandlers.print())
 
@@ -378,7 +381,7 @@ class ApiV1MemberControllerTest {
         val resultActions = mvc
             .perform(
                 get("/api/v1/members/me")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer wrong-api-key")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer wrong-api-key wrong-access-token")
             )
             .andDo(MockMvcResultHandlers.print())
 
@@ -391,10 +394,13 @@ class ApiV1MemberControllerTest {
     @Test
     @DisplayName("내 정보, with wrong endpoint")
     fun t14() {
+        val actor = memberService.findByUsername("user1").getOrThrow()
+        val actorAuthIntegrationToken = memberService.genAuthIntegrationToken(actor)
+
         val resultActions = mvc
             .perform(
                 get("/api/v1/members/me-wrong")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer user1 EMPTY")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer $actorAuthIntegrationToken")
             )
             .andDo(MockMvcResultHandlers.print())
 

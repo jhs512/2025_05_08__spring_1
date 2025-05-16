@@ -15,7 +15,7 @@ import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-class SecurityConfig(
+class onfig(
     private val customAuthenticationFilter: CustomAuthenticationFilter,
 ) {
     @Bean
