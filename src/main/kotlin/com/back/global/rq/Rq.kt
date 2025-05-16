@@ -56,6 +56,19 @@ class Rq(
         resp.addHeader("Set-Cookie", cookie.toString())
     }
 
+    fun deleteCookie(name: String) {
+        val cookie = ResponseCookie.from(name, "")
+            .path("/")
+            .domain(cookieDomain())
+            .sameSite("Strict")
+            .secure(true)
+            .httpOnly(true)
+            .maxAge(0)
+            .build()
+
+        resp.addHeader("Set-Cookie", cookie.toString())
+    }
+
     val member: Member by lazy {
         SecurityContextHolder
             .getContext()
@@ -101,5 +114,10 @@ class Rq(
         setCookie("apiKey", member.apiKey)
         setCookie("accessToken", accessToken)
         return accessToken
+    }
+
+    fun deleteAuthCookies() {
+        deleteCookie("apiKey")
+        deleteCookie("accessToken")
     }
 }

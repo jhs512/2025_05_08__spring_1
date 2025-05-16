@@ -2,6 +2,7 @@ package com.back.domain.member.member.controller
 
 import com.back.domain.member.member.service.MemberService
 import com.back.standard.extensions.getOrThrow
+import org.assertj.core.api.Assertions
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.DisplayName
@@ -15,9 +16,12 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.security.test.context.support.WithUserDetails
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.transaction.annotation.Transactional
 import java.nio.charset.StandardCharsets.UTF_8
@@ -403,5 +407,35 @@ class ApiV1MemberControllerTest {
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.resultCode").value("404-1"))
             .andExpect(jsonPath("$.msg").value(containsString("해당 엔드포인트는 존재하지 않습니다.")))
+    }
+
+    @Test
+    @DisplayName("로그아웃")
+    fun t15() {
+        val resultActions = mvc
+            .perform(
+                MockMvcRequestBuilders.delete("/api/v1/members/logout")
+            )
+            .andDo(MockMvcResultHandlers.print())
+
+        resultActions
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.resultCode").value("200-1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.msg").value("로그아웃 되었습니다."))
+            .andExpect { result: MvcResult ->
+                val accessTokenCookie = result.response.getCookie("accessToken")!!
+                Assertions.assertThat(accessTokenCookie.value).isEmpty()
+                Assertions.assertThat(accessTokenCookie.maxAge).isEqualTo(0)
+                Assertions.assertThat(accessTokenCookie.path).isEqualTo("/")
+                Assertions.assertThat(accessTokenCookie.isHttpOnly).isTrue()
+                Assertions.assertThat(accessTokenCookie.secure).isTrue()
+
+                val apiKeyCookie = result.response.getCookie("apiKey")!!
+                Assertions.assertThat(apiKeyCookie.value).isEmpty()
+                Assertions.assertThat(apiKeyCookie.maxAge).isEqualTo(0)
+                Assertions.assertThat(apiKeyCookie.path).isEqualTo("/")
+                Assertions.assertThat(apiKeyCookie.isHttpOnly).isTrue()
+                Assertions.assertThat(apiKeyCookie.secure).isTrue()
+            }
     }
 }

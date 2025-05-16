@@ -6,6 +6,7 @@ import com.back.domain.member.member.service.MemberService
 import com.back.global.exception.ServiceException
 import com.back.global.rq.Rq
 import com.back.global.rsData.RsData
+import com.back.standard.base.Empty
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import org.springframework.web.bind.annotation.*
@@ -68,6 +69,17 @@ class ApiV1MemberController(
                 apiKey = member.apiKey,
                 accessToken = accessToken
             )
+        )
+    }
+
+    @DeleteMapping("/logout")
+    fun logout(
+    ): RsData<Empty> {
+        rq.deleteAuthCookies()
+
+        return RsData(
+            resultCode = "200-1",
+            msg = "로그아웃 되었습니다.",
         )
     }
 }
