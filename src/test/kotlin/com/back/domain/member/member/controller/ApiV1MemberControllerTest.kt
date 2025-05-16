@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.security.test.context.support.WithUserDetails
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -312,18 +313,15 @@ class ApiV1MemberControllerTest {
 
     @Test
     @DisplayName("내 정보")
+    @WithUserDetails("user1")
     fun t10() {
-        val actor = memberService.findByUsername("user1").getOrThrow()
-        val actorAuthIntegrationToken = memberService.genAuthIntegrationToken(actor)
-
         val resultActions = mvc
             .perform(
                 get("/api/v1/members/me")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer $actorAuthIntegrationToken")
             )
             .andDo(MockMvcResultHandlers.print())
 
-        val member = actor
+        val member = memberService.findByUsername("user1").getOrThrow()
 
         resultActions
             .andExpect(handler().handlerType(ApiV1MemberController::class.java))
@@ -393,14 +391,11 @@ class ApiV1MemberControllerTest {
 
     @Test
     @DisplayName("내 정보, with wrong endpoint")
+    @WithUserDetails("user1")
     fun t14() {
-        val actor = memberService.findByUsername("user1").getOrThrow()
-        val actorAuthIntegrationToken = memberService.genAuthIntegrationToken(actor)
-
         val resultActions = mvc
             .perform(
                 get("/api/v1/members/me-wrong")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer $actorAuthIntegrationToken")
             )
             .andDo(MockMvcResultHandlers.print())
 
